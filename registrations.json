@@ -1,0 +1,65 @@
+[
+    {
+        "nama": "fafai",
+        "asal_smp": "smp sana sjni",
+        "whatsapp": "088882253864",
+        "minat": "Belum Tahu",
+        "alasan": "saya ingin bertemu bgg rihan",
+        "id": 1,
+        "timestamp": "2026-06-09 19:06:58"
+    },
+    {
+        "nama": "Jenna",
+        "asal_smp": "SMP Oxford 1",
+        "whatsapp": "081234567891",
+        "minat": "Color Guard",
+        "alasan": "Continuing my artistic talent HAHAHA",
+        "id": 2,
+        "timestamp": "2026-06-09 20:09:21"
+    },
+    {
+        "nama": "Zahara azalia",
+        "asal_smp": "Mts Nurul hikmah tinjowan",
+        "whatsapp": "082274753166",
+        "minat": "Color Guard",
+        "alasan": "fomo",
+        "id": 3,
+        "timestamp": "2026-06-09 21:12:00"
+    },
+    {
+        "nama": "RAIHAN DWI WANSAYH",
+        "asal_smp": "SMP tangerang",
+        "whatsapp": "085270145632",
+        "minat": "Belum Tahu",
+        "alasan": "Biasa aja",
+        "id": 4,
+        "timestamp": "2026-06-10 22:12:24"
+    },
+    {
+        "nama": "Ageng",
+        "asal_smp": "SMP medan",
+        "whatsapp": "08523394848",
+        "minat": "Belum Tahu",
+        "alasan": "B ajaaa",
+        "id": 5,
+        "timestamp": "2026-06-10 23:57:26"
+    },
+    {
+        "nama": "Zahara azalia",
+        "asal_smp": "Mts Nurul hikmah tinjowan",
+        "whatsapp": "082274753166",
+        "minat": "Brass",
+        "alasan": "secret",
+        "id": 6,
+        "timestamp": "2026-06-11 21:38:55"
+    },
+    {
+        "nama": "Anugrah rahadian",
+        "asal_smp": "Esmepe",
+        "whatsapp": "088888888",
+        "minat": "Drumline",
+        "alasan": "Mau keren",
+        "id": 7,
+        "timestamp": "2026-06-13 10:06:23"
+    }
+]
