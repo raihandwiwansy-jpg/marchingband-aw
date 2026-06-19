@@ -378,7 +378,8 @@
             cursor: pointer;
             z-index: 1000;
             animation: float 3s ease-in-out infinite;
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            /* 🆕 SMOOTH TRANSITION - tidak terlalu cepat/tidak terlalu lambat */
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             border: 3px solid #000;
             overflow: hidden;
         }
@@ -460,7 +461,8 @@
             opacity: 0;
             transform: translateY(20px) scale(0.8);
             pointer-events: none;
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            /* 🆕 SMOOTH TRANSITION - sama dengan avatar */
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             transform-origin: bottom right;
         }
         
@@ -481,7 +483,7 @@
             border-left: 12px solid transparent;
             border-right: 12px solid transparent;
             border-top: 12px solid #FDB931;
-            transition: all 0.5s;
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
         
         .speech-bubble::before {
@@ -495,7 +497,7 @@
             border-right: 10px solid transparent;
             border-top: 10px solid white;
             z-index: 1;
-            transition: all 0.5s;
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
         
         /* 🆕 Tail mengarah ke bawah saat bubble di atas avatar */
@@ -1310,13 +1312,27 @@
             return 'desktop';
         }
 
-        // 🆕 Deteksi keyboard di mobile
+        // 🆕 Deteksi keyboard di mobile - DIPERBAIKI untuk HP baru
         function detectKeyboard() {
             if (window.visualViewport) {
+                // 🆕 Track initial height untuk deteksi keyboard yang lebih akurat
+                const initialHeight = window.innerHeight;
+                
                 window.visualViewport.addEventListener('resize', () => {
-                    const newKeyboardHeight = window.innerHeight - window.visualViewport.height;
-                    if (newKeyboardHeight > 100) {
-                        keyboardHeight = newKeyboardHeight;
+                    const currentViewportHeight = window.visualViewport.height;
+                    const currentWindowHeight = window.innerHeight;
+                    
+                    // 🆕 Metode 1: visualViewport height berkurang = keyboard muncul
+                    const viewportDiff = initialHeight - currentViewportHeight;
+                    
+                    // 🆕 Metode 2: window.innerHeight - visualViewport.height (fallback)
+                    const windowDiff = currentWindowHeight - currentViewportHeight;
+                    
+                    // 🆕 Ambil nilai terbesar dari kedua metode (lebih reliable)
+                    const detectedKeyboardHeight = Math.max(viewportDiff, windowDiff);
+                    
+                    if (detectedKeyboardHeight > 80) {
+                        keyboardHeight = detectedKeyboardHeight;
                     } else {
                         keyboardHeight = 0;
                     }
@@ -1330,7 +1346,54 @@
                         }
                     }
                 });
+                
+                // 🆕 Juga listen scroll event pada visualViewport (beberapa HP trigger ini saat keyboard muncul)
+                window.visualViewport.addEventListener('scroll', () => {
+                    if (currentField && (getScreenSize() === 'small' || getScreenSize() === 'medium')) {
+                        const targetElement = document.querySelector(`[name="${currentField}"]`) || 
+                                            document.querySelector(`.minat-option[data-value="${currentField.replace('minat-', '')}"]`);
+                        if (targetElement) {
+                            positionAvatarAndBubble(targetElement);
+                        }
+                    }
+                });
             }
+            
+            // 🆕 Fallback untuk HP yang tidak support visualViewport dengan baik
+            // Gunakan focus/blur events untuk estimasi keyboard
+            document.querySelectorAll('#registerForm input, #registerForm textarea').forEach(field => {
+                field.addEventListener('focus', () => {
+                    // 🆕 Delay sedikit biar keyboard sempat muncul sebelum hitung
+                    setTimeout(() => {
+                        if (window.visualViewport) {
+                            const diff = window.innerHeight - window.visualViewport.height;
+                            if (diff > 80) {
+                                keyboardHeight = diff;
+                            }
+                        }
+                        
+                        // 🆕 Fallback: jika visualViewport tidak berubah, gunakan estimasi berdasarkan tipe field
+                        if (keyboardHeight === 0 && (getScreenSize() === 'small' || getScreenSize() === 'medium')) {
+                            const isTextarea = field.tagName === 'TEXTAREA';
+                            // Estimasi keyboard height berdasarkan tipe device
+                            const estimatedKB = isTextarea ? 280 : 300;
+                            keyboardHeight = estimatedKB;
+                        }
+                        
+                        // Reposisi setelah keyboard terdeteksi
+                        if (currentField && (getScreenSize() === 'small' || getScreenSize() === 'medium')) {
+                            positionAvatarAndBubble(field);
+                        }
+                    }, 150);
+                });
+                
+                field.addEventListener('blur', () => {
+                    // Reset keyboard height saat field kehilangan fokus
+                    setTimeout(() => {
+                        keyboardHeight = 0;
+                    }, 100);
+                });
+            });
         }
 
         // 🆕 Fungsi untuk toggle minat (bisa select & deselect) + penjelasan per bagian
@@ -1439,7 +1502,7 @@
             }, 500);
         }
 
-        // 🆕 Smart positioning untuk avatar & speech bubble - DIPERBAIKI untuk HP sedang
+        // 🆕 Smart positioning untuk avatar & speech bubble - MAKSIMAL ANTI KEYBOARD
         function positionAvatarAndBubble(targetElement = null) {
             const avatar = document.getElementById('aiAvatar');
             const bubble = document.getElementById('speechBubble');
@@ -1452,81 +1515,110 @@
                 // Di mobile kecil/sedang, posisikan avatar & bubble mengikuti field
                 const rect = targetElement.getBoundingClientRect();
                 
-                // Hitung visible area (viewport dikurangi keyboard)
-                const visibleHeight = window.innerHeight - keyboardHeight;
+                // 🆕 Hitung visible area dengan keyboard yang lebih akurat
+                // Gunakan visualViewport.height jika tersedia, fallback ke window.innerHeight - keyboardHeight
+                let visibleHeight;
+                if (window.visualViewport && window.visualViewport.height > 0) {
+                    visibleHeight = window.visualViewport.height;
+                } else {
+                    visibleHeight = window.innerHeight - keyboardHeight;
+                }
+                
+                // 🆕 Safety margin untuk keyboard (antisipasi keyboard yang belum terdeteksi)
+                const safetyMargin = 20;
+                const effectiveVisibleHeight = visibleHeight - safetyMargin;
                 
                 // 🆕 Ukuran seragam untuk small & medium (biar konsisten seperti HP kecil)
                 const avatarSize = screenSize === 'small' ? 44 : 48;
                 const bubblePadding = 12;
-                const bubbleGap = 12;
+                const bubbleGap = 10;
                 
                 // 🆕 Cek apakah field adalah textarea (kolom Alasan)
                 const isTextarea = targetElement.tagName === 'TEXTAREA';
                 
-                // 🆕 Estimasi tinggi bubble yang lebih akurat
-                // Teks panjang ~ 80 karakter, font-size 13px, line-height 1.5, width ~90% viewport
-                const estimatedBubbleHeight = 110;
+                // 🆕 Estimasi tinggi bubble yang lebih akurat berdasarkan teks
+                const textLength = document.getElementById('speechText').textContent.length || 50;
+                const charsPerLine = Math.floor((window.innerWidth - 64) / 7); // ~7px per char at 13px font
+                const estimatedLines = Math.ceil(textLength / charsPerLine);
+                const estimatedBubbleHeight = Math.min(Math.max(estimatedLines * 20 + 40, 80), 140);
                 const bubbleWidth = window.innerWidth - 32;
                 
                 // 🆕 Tentukan posisi avatar berdasarkan tipe field
                 let avatarTop;
                 if (isTextarea) {
                     // Untuk textarea (kolom Alasan), taruh avatar di ATAS textarea
-                    // Supaya ga ketutup keyboard dan bubble bisa muncul di atas avatar
                     avatarTop = rect.top - avatarSize - bubbleGap;
                 } else {
                     // Untuk input biasa, taruh di tengah field
                     avatarTop = rect.top + (rect.height / 2) - (avatarSize / 2);
                 }
                 
-                // 🆕 Posisi ideal bubble: DI ATAS avatar
+                // 🆕 STRATEGI POSISI UTAMA: Bubble DI ATAS avatar
                 let bubbleTop = avatarTop - estimatedBubbleHeight - bubbleGap;
+                let bubblePosition = 'above'; // 'above' or 'below'
                 
-                // 🆕 LOGIKA CERDAS: Kalau bubble ga muat di atas, sesuaikan
+                // 🆕 LOGIKA CERDAS MULTI-LAYER: Pastikan TIDAK ketutup keyboard
+                
+                // Layer 1: Cek apakah bubble muat di atas avatar
                 if (bubbleTop < 10) {
-                    // Bubble ga muat di atas viewport, coba taruh di bawah avatar
+                    // Tidak muat di atas, coba di BAWAH avatar
                     const bubbleBelow = avatarTop + avatarSize + bubbleGap;
                     
-                    // Cek apakah muat di bawah (dengan mempertimbangkan keyboard)
-                    if (bubbleBelow + estimatedBubbleHeight <= visibleHeight - 10) {
+                    // Layer 2: Cek apakah muat di bawah avatar (dengan keyboard)
+                    if (bubbleBelow + estimatedBubbleHeight <= effectiveVisibleHeight - 10) {
                         // Muat di bawah avatar
                         bubbleTop = bubbleBelow;
-                        bubble.classList.remove('tail-bottom');
-                        bubble.classList.add('tail-top');
+                        bubblePosition = 'below';
                     } else {
-                        // Ga muat di bawah juga, paksa di ATAS dengan clamp
-                        // Geser avatar ke bawah sedikit biar bubble muat
+                        // Layer 3: Tidak muat di atas maupun di bawah
+                        // Paksa bubble di ATAS viewport, geser avatar ke bawah
                         bubbleTop = 10;
                         avatarTop = bubbleTop + estimatedBubbleHeight + bubbleGap;
-                        bubble.classList.remove('tail-top');
-                        bubble.classList.add('tail-bottom');
+                        bubblePosition = 'above';
+                        
+                        // Layer 4: Pastikan avatar masih dalam visible area
+                        if (avatarTop + avatarSize > effectiveVisibleHeight - 10) {
+                            // Avatar juga keluar, kompromi: taruh keduanya di area yang tersisa
+                            const availableSpace = effectiveVisibleHeight - 20;
+                            const totalNeeded = estimatedBubbleHeight + bubbleGap + avatarSize;
+                            
+                            if (totalNeeded <= availableSpace) {
+                                // Masih muat, susun dari atas
+                                bubbleTop = 10;
+                                avatarTop = bubbleTop + estimatedBubbleHeight + bubbleGap;
+                            } else {
+                                // Sangat sempit, prioritaskan bubble di atas, avatar di bawah bubble
+                                bubbleTop = 10;
+                                avatarTop = bubbleTop + estimatedBubbleHeight + 5;
+                                // Kurangi gap jika perlu
+                            }
+                        }
                     }
+                }
+                
+                // 🆕 Final clamp: Pastikan keduanya dalam safe zone
+                const minTop = 8;
+                const maxAvatarTop = effectiveVisibleHeight - avatarSize - 8;
+                const maxBubbleTop = effectiveVisibleHeight - estimatedBubbleHeight - 8;
+                
+                avatarTop = Math.max(minTop, Math.min(maxAvatarTop, avatarTop));
+                bubbleTop = Math.max(minTop, Math.min(maxBubbleTop, bubbleTop));
+                
+                // 🆕 Set tail direction berdasarkan posisi akhir
+                if (bubblePosition === 'below') {
+                    bubble.classList.remove('tail-bottom');
+                    bubble.classList.add('tail-top');
                 } else {
-                    // Bubble muat di atas
                     bubble.classList.remove('tail-top');
                     bubble.classList.add('tail-bottom');
                 }
                 
-                // 🆕 Clamp avatarTop biar dalam visible area (dengan keyboard)
-                const minAvatarTop = bubbleTop > 10 ? 10 : (estimatedBubbleHeight + bubbleGap + 10);
-                const maxAvatarTop = visibleHeight - avatarSize - 10;
-                avatarTop = Math.max(minAvatarTop, Math.min(maxAvatarTop, avatarTop));
-                
-                // 🆕 Recalculate bubble position berdasarkan avatar yang sudah di-clamp
-                if (bubble.classList.contains('tail-bottom')) {
-                    bubbleTop = avatarTop - estimatedBubbleHeight - bubbleGap;
-                    if (bubbleTop < 10) bubbleTop = 10;
-                } else {
-                    bubbleTop = avatarTop + avatarSize + bubbleGap;
-                }
-                
                 // Posisi avatar & bubble di kanan
-                const avatarRight = screenSize === 'small' ? 16 : 16;
-                const bubbleRight = screenSize === 'small' ? 16 : 16;
+                const avatarRight = 16;
+                const bubbleRight = 16;
                 
                 // Set posisi avatar
                 avatar.classList.add('mobile-active');
-                avatar.style.transition = 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
                 avatar.style.bottom = 'auto';
                 avatar.style.top = avatarTop + 'px';
                 avatar.style.right = avatarRight + 'px';
@@ -1535,7 +1627,6 @@
                 avatar.style.height = avatarSize + 'px';
                 
                 // Set posisi bubble
-                bubble.style.transition = 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
                 bubble.style.bottom = 'auto';
                 bubble.style.top = bubbleTop + 'px';
                 bubble.style.right = bubbleRight + 'px';
@@ -1587,7 +1678,6 @@
             const screenSize = getScreenSize();
             
             avatar.classList.remove('mobile-active');
-            avatar.style.transition = 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
             avatar.style.top = 'auto';
             avatar.style.left = 'auto';
             // Reset size ke default (biar CSS yang handle)
@@ -1634,7 +1724,6 @@
                     bubble.style.padding = '16px';
             }
             
-            bubble.style.transition = 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
             bubble.style.top = 'auto';
             bubble.style.left = 'auto';
             
@@ -1730,7 +1819,14 @@
                     
                     if (targetElement) {
                         const rect = targetElement.getBoundingClientRect();
-                        const visibleHeight = window.innerHeight - keyboardHeight;
+                        
+                        // 🆕 Gunakan visualViewport untuk akurasi yang lebih baik
+                        let visibleHeight;
+                        if (window.visualViewport && window.visualViewport.height > 0) {
+                            visibleHeight = window.visualViewport.height;
+                        } else {
+                            visibleHeight = window.innerHeight - keyboardHeight;
+                        }
                         
                         // Cek apakah field masih terlihat di viewport
                         const isVisible = rect.top < visibleHeight && rect.bottom > 0;
