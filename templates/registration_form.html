@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Pendaftaran Simphony Marching Band</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #0A1128, #122340); /* Dark blue gradient */
+            color: #E0FBFC; /* Light blue/white text */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top for better scrolling */
+            scroll-behavior: smooth;
+            padding-bottom: 100px; /* Ample padding for keyboard */
+        }
+
+        .container {
+            background-color: #1F364D; /* Slightly lighter dark blue */
+            padding: 30px 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 480px; /* Mobile-first breakpoint */
+            box-sizing: border-box;
+            border: 1px solid #FFD700; /* Gold border */
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            color: #FFD700; /* Gold title */
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .tagline {
+            text-align: center;
+            color: #ADD8E6; /* Light blue */
+            margin-bottom: 25px;
+            font-size: 0.9em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #FFD700; /* Gold label */
+            font-weight: 700;
+            font-size: 0.95em;
+        }
+
+        input[type="text"],
+        input[type="tel"] {
+            width: calc(100% - 20px);
+            padding: 12px;
+            border: 1px solid #4A6E8B; /* Medium blue border */
+            border-radius: 8px;
+            background-color: #0A1128; /* Darkest blue for input background */
+            color: #E0FBFC;
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            touch-action: manipulation; /* Important for mobile keyboard */
+        }
+
+        input[type="text"]::placeholder,
+        input[type="tel"]::placeholder {
+            color: #8fa6c4; /* Lighter blue for placeholder */
+        }
+
+        input[type="text"]:focus,
+        input[type="tel"]:focus {
+            border-color: #FFD700; /* Gold on focus */
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.3);
+            outline: none;
+        }
+
+        .hint {
+            display: block;
+            font-size: 0.75em;
+            color: #ADD8E6; /* Light blue for hints */
+            margin-top: 5px;
+            line-height: 1.4;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .radio-group input[type="radio"] {
+            display: none; /* Hide default radio button */
+        }
+
+        .radio-group label {
+            background-color: #0A1128; /* Darkest blue */
+            color: #E0FBFC;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #4A6E8B;
+            cursor: pointer;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+        }
+
+        .radio-group label::before {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #FFD700; /* Gold ring */
+            border-radius: 50%;
+            margin-right: 10px;
+            background-color: transparent;
+            transition: background-color 0.3s ease;
+        }
+
+        .radio-group input[type="radio"]:checked + label {
+            background-color: #3C6E71; /* Tealish blue when checked */
+            border-color: #FFD700; /* Gold border when checked */
+            color: #FFD700; /* Gold text when checked */
+            font-weight: 700;
+        }
+
+        .radio-group input[type="radio"]:checked + label::before {
+            background-color: #FFD700; /* Gold dot when checked */
+            border-color: #FFD700;
+        }
+
+
+        .submit-button {
+            width: 100%;
+            padding: 15px;
+            background-color: #FFD700; /* Gold button */
+            color: #0A1128; /* Dark blue text on gold */
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 25px;
+            position: sticky; /* Make it sticky, but within flow */
+            bottom: 20px; /* Adjust as needed */
+            z-index: 10;
+        }
+
+        .submit-button:hover {
+            background-color: #E0A600; /* Darker gold on hover */
+            transform: translateY(-2px);
+        }
+
+        /* Responsive adjustments for larger screens if needed, but mobile-first specified max-width 480px */
+        @media (min-width: 481px) {
+            body {
+                align-items: center; /* Center vertically on larger screens */
+                padding-bottom: 20px; /* Less padding needed */
+            }
+            .container {
+                padding: 40px;
+            }
+            h1 {
+                font-size: 2.5em;
+            }
+            .tagline {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pendaftaran Simphony Marching Band</h1>
+        <p class="tagline">Bergabunglah dengan harmoni kami!</p>
+
+        <form action="/register" method="POST">
+            <div class="form-group">
+                <label for="fullName">Nama Lengkap</label>
+                <input type="text" id="fullName" name="fullName" placeholder="Contoh: Raihan Fadhila" required>
+                <small class="hint">Isi nama lengkap sesuai rapor/KTM ya, jangan nama panggilan ya! 😊</small>
+            </div>
+
+            <div class="form-group">
+                <label for="juniorHighSchool">Asal SMP</label>
+                <input type="text" id="juniorHighSchool" name="juniorHighSchool" placeholder="Contoh: SMP Negeri 1 Jakarta" required>
+                <small class="hint">Sebutkan nama lengkap SMP Anda saat ini.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="whatsappNumber">No. WhatsApp</label>
+                <input type="tel" id="whatsappNumber" name="whatsappNumber" placeholder="Contoh: 081234567890" pattern="[0-9]{10,15}" required>
+                <small class="hint">Nomor yang bisa dihubungi untuk informasi lebih lanjut.</small>
+            </div>
+
+            <div class="form-group">
+                <label>Minat Bagian (GIZMO)</label>
+                <div class="radio-group">
+                    <input type="radio" id="gitasurya" name="interestSection" value="Gitasurya" required>
+                    <label for="gitasurya">Gitasurya</label>
+
+                    <input type="radio" id="brass" name="interestSection" value="Brass">
+                    <label for="brass">Brass</label>
+
+                    <input type="radio" id="percussion" name="interestSection" value="Percussion">
+                    <label for="percussion">Percussion</label>
+
+                    <input type="radio" id="colourguard" name="interestSection" value="Colour Guard">
+                    <label for="colourguard">Colour Guard</label>
+
+                    <input type="radio" id="fieldCommander" name="interestSection" value="Field Commander">
+                    <label for="fieldCommander">Field Commander</label>
+                </div>
+                <small class="hint">Pilih bagian yang paling Anda minati.</small>
+            </div>
+
+            <button type="submit" class="submit-button">Daftar Sekarang</button>
+        </form>
+    </div>
+
+    <script>
+        // JavaScript for smooth scrolling on focus
+        document.querySelectorAll('input, textarea, select').forEach(input => {
+            input.addEventListener('focus', () => {
+                input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        });
+    </script>
+</body>
+</html>
