@@ -249,7 +249,7 @@
             background:rgba(18,18,24,0.92); backdrop-filter:blur(20px);
             border:1px solid var(--glass-border); border-radius:16px; padding:14px 16px;
             z-index:999; opacity:0; transform:translateY(10px) scale(0.95);
-            pointer-events:none; transition:all 0.3s ease;
+            pointer-events:none; transition:opacity 0.3s ease, transform 0.3s ease, bottom 0.2s ease;
         }
         .speech-bubble.show { opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
         .speech-bubble::after {
@@ -520,6 +520,36 @@ whatsapp:'Masukkan nomor WhatsApp aktif, format 08xxx 📱',alasan:'Ceritakan al
 document.querySelectorAll('#registerForm input, #registerForm textarea').forEach(f=>{
     f.addEventListener('focus',()=>{const t=fieldGuidance[f.name];if(t&&!chatOpen)showSpeech(t);});
 });
+
+// Fix: reposition speech bubble above mobile keyboard using VisualViewport API
+(function(){
+    const bubble=document.getElementById('speechBubble');
+    if(!bubble||!window.visualViewport)return;
+    let defaultBottom=100;
+    function syncKeyboard(){
+        const vt=window.visualViewport.offsetTop;
+        const vh=window.visualViewport.height;
+        const sh=window.innerHeight;
+        const kbUp=sh-(vh+vt);
+        if(kbUp>50){
+            bubble.style.bottom=(kbUp+12)+'px';
+        } else {
+            bubble.style.bottom=defaultBottom+'px';
+        }
+    }
+    window.visualViewport.addEventListener('resize',syncKeyboard);
+    window.visualViewport.addEventListener('scroll',syncKeyboard);
+    // Also scroll focused input into view when keyboard appears
+    document.querySelectorAll('#registerForm input, #registerForm textarea').forEach(f=>{
+        f.addEventListener('focus',()=>{
+            setTimeout(()=>{
+                if(window.visualViewport.height<window.innerHeight*0.6){
+                    f.scrollIntoView({behavior:'smooth',block:'center'});
+                }
+            },300);
+        });
+    });
+})();
 </script>
 </body>
 </html>
