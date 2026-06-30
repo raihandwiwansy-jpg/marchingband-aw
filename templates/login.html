@@ -4,389 +4,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Admin - Symphony</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
-        }
-        
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #2d2d2d 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        /* Animated Gold Particles Background */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(253, 185, 49, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(232, 185, 35, 0.12) 0%, transparent 40%),
-                radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 60%);
-            pointer-events: none;
-            z-index: 0;
-            animation: bgShimmer 8s ease-in-out infinite;
-        }
-        
-        @keyframes bgShimmer {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 1; }
-        }
-        
-        /* Login Container */
-        .login-container {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            max-width: 440px;
-            padding: 20px;
-            animation: fadeInUp 0.8s ease-out;
-        }
-        
-        @keyframes fadeInUp {
-            from { 
-                opacity: 0; 
-                transform: translateY(30px); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
-            }
-        }
-        
-        /* Login Card - Premium Gold & Black */
-        .login-card {
-            background: white;
-            border-radius: 24px;
-            padding: 40px 32px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(253, 185, 49, 0.15);
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(253, 185, 49, 0.2);
-        }
-        
-        .login-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, #000 0%, #FDB931 50%, #000 100%);
-        }
-        
-        /* Logo Section */
-        .logo-section {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-        
-        .login-logo {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #FDB931;
-            box-shadow: 0 0 20px rgba(253, 185, 49, 0.6), 0 0 40px rgba(253, 185, 49, 0.3);
-            animation: logoGlow 3s ease-in-out infinite;
-            margin-bottom: 16px;
-            background: #000;
-        }
-        
-        @keyframes logoGlow {
-            0%, 100% { 
-                box-shadow: 0 0 20px rgba(253, 185, 49, 0.6), 0 0 40px rgba(253, 185, 49, 0.3);
-                transform: scale(1);
-            }
-            50% { 
-                box-shadow: 0 0 30px rgba(253, 185, 49, 0.9), 0 0 60px rgba(253, 185, 49, 0.5);
-                transform: scale(1.05);
-            }
-        }
-        
-        .login-title {
-            font-size: 26px;
-            font-weight: 800;
-            margin: 0 0 8px 0;
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .login-title i {
-            color: #FDB931;
-            -webkit-text-fill-color: #FDB931;
-        }
-        
-        .login-subtitle {
-            color: #6b7280;
-            font-size: 14px;
-            margin: 0;
-        }
-        
-        /* Alert Error */
-        .alert {
-            border-radius: 12px;
-            padding: 12px 16px;
-            margin-bottom: 24px;
-            border: 2px solid #fee2e2;
-            background: #fef2f2;
-            color: #dc2626;
-            font-size: 14px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            animation: shake 0.5s ease-in-out;
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-        
-        .alert i {
-            font-size: 18px;
-        }
-        
-        /* Form Groups */
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #1f2937;
-            font-weight: 700;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-        
-        .form-group label i {
-            font-size: 18px;
-            color: #E8B923;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #e5e7eb;
-            border-radius: 14px;
-            font-size: 15px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            outline: none;
-            background: #f9fafb;
-            color: #1f2937;
-        }
-        
-        .form-group input:focus {
-            border-color: #FDB931;
-            background: white;
-            box-shadow: 0 0 0 4px rgba(253, 185, 49, 0.15);
-            transform: translateY(-2px);
-        }
-        
-        .form-group input::placeholder {
-            color: #9ca3af;
-        }
-        
-        /* Submit Button - Gold Premium */
-        .btn-submit {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
-            color: #FDB931;
-            border: 2px solid #FDB931;
-            border-radius: 14px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 8px 20px rgba(253, 185, 49, 0.3);
-            margin-top: 8px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            text-decoration: none;
-        }
-        
-        .btn-submit:hover {
-            background: linear-gradient(135deg, #FDB931 0%, #E8B923 100%);
-            color: #000;
-            transform: translateY(-2px);
-            box-shadow: 0 12px 28px rgba(253, 185, 49, 0.5);
-        }
-        
-        .btn-submit:active {
-            transform: translateY(0);
-        }
-        
-        /* Back Button */
-        .btn-back {
-            width: 100%;
-            padding: 14px;
-            background: transparent;
-            color: #6b7280;
-            border: 2px solid #e5e7eb;
-            border-radius: 14px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 12px;
-            text-decoration: none;
-        }
-        
-        .btn-back:hover {
-            background: #f3f4f6;
-            border-color: #d1d5db;
-            color: #1f2937;
-            transform: translateY(-2px);
-        }
-        
-        /* Footer Text */
-        .footer-text {
-            text-align: center;
-            margin-top: 24px;
-            padding-top: 20px;
-            border-top: 2px solid #f3f4f6;
-            color: #9ca3af;
-            font-size: 12px;
-        }
-        
-        .footer-text i {
-            color: #FDB931;
-        }
-        
-        /* Responsive */
-        @media (max-width: 480px) {
-            .login-container {
-                padding: 16px;
-            }
-            
-            .login-card {
-                padding: 32px 24px;
-            }
-            
-            .login-logo {
-                width: 70px;
-                height: 70px;
-            }
-            
-            .login-title {
-                font-size: 22px;
-            }
-            
-            .form-group input {
-                padding: 12px 14px;
-                font-size: 14px;
-            }
-            
-            .btn-submit {
-                padding: 14px;
-                font-size: 15px;
-            }
-        }
-        
-        @media (max-width: 360px) {
-            .login-card {
-                padding: 28px 20px;
-            }
-            
-            .login-logo {
-                width: 64px;
-                height: 64px;
-            }
-            
-            .login-title {
-                font-size: 20px;
-            }
-        }
+        :root{--gold:#FDB931;--gold-dark:#E8B923;--bg:#0a0a0f;--glass:rgba(255,255,255,0.06);--glass-border:rgba(253,185,49,0.15);--text:#e8e8ec;--text-dim:#8a8a9a;--radius:20px;--radius-sm:12px}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+        .bg-gradient{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 600px 400px at 20% 30%,rgba(253,185,49,0.08) 0%,transparent 70%),radial-gradient(ellipse 500px 500px at 80% 70%,rgba(232,185,35,0.06) 0%,transparent 70%);animation:bgShift 20s ease-in-out infinite alternate}
+        @keyframes bgShift{0%{transform:scale(1) translate(0,0)}50%{transform:scale(1.05) translate(-2%,3%)}100%{transform:scale(1) translate(2%,-2%)}}
+        .login-wrap{position:relative;z-index:1;width:100%;max-width:420px;padding:20px;animation:fadeIn 0.6s ease-out}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        .login-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);padding:40px 32px;backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.05)}
+        .logo-sec{text-align:center;margin-bottom:32px}
+        .login-logo{width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);box-shadow:0 0 30px rgba(253,185,49,0.3);margin-bottom:16px;animation:logoPulse 4s ease-in-out infinite}
+        @keyframes logoPulse{0%,100%{box-shadow:0 0 20px rgba(253,185,49,0.3);transform:scale(1)}50%{box-shadow:0 0 40px rgba(253,185,49,0.5);transform:scale(1.03)}}
+        .login-title{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;margin:0 0 8px;display:flex;align-items:center;justify-content:center;gap:10px;color:var(--text)}
+        .login-title i{color:var(--gold);font-size:22px}
+        .login-sub{color:var(--text-dim);font-size:13px;margin:0}
+        .alert{border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:24px;border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.08);color:#ef4444;font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;animation:shake 0.4s ease-in-out}
+        @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+        .field{margin-bottom:20px}
+        .field label{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--text);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px}
+        .field label i{color:var(--gold);font-size:16px}
+        .field input{width:100%;padding:14px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);color:var(--text);font-size:15px;font-family:'Inter',sans-serif;outline:none;transition:all 0.3s ease}
+        .field input::placeholder{color:rgba(255,255,255,0.25)}
+        .field input:focus{border-color:var(--gold);background:rgba(253,185,49,0.04);box-shadow:0 0 0 3px rgba(253,185,49,0.1)}
+        .btn-submit{width:100%;padding:16px;background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:#000;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;transition:all 0.3s ease;display:flex;align-items:center;justify-content:center;gap:10px;position:relative;overflow:hidden}
+        .btn-submit::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(255,255,255,0.2),transparent);transform:translateX(-100%);transition:transform 0.5s ease}
+        .btn-submit:hover::before{transform:translateX(100%)}
+        .btn-submit:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(253,185,49,0.4)}
+        .btn-back{width:100%;padding:14px;background:transparent;color:var(--text-dim);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:12px;text-decoration:none;font-family:'Inter',sans-serif}
+        .btn-back:hover{background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.15);color:var(--text)}
+        .footer-txt{text-align:center;margin-top:24px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06);color:var(--text-dim);font-size:12px;display:flex;align-items:center;justify-content:center;gap:6px}
+        .footer-txt i{color:var(--gold)}
+        @media(max-width:480px){.login-wrap{padding:16px}.login-card{padding:32px 24px}.login-logo{width:70px;height:70px}.login-title{font-size:20px}}
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-card">
-            <!-- Logo Section -->
-            <div class="logo-section">
-                <img src="/static/logo.jpg" alt="Symphony Logo" class="login-logo" onerror="this.style.display='none'">
-                <h1 class="login-title">
-                    <i class="bi bi-shield-lock-fill"></i>
-                    Admin Login
-                </h1>
-                <p class="login-subtitle">Marching Band Simphony</p>
-            </div>
-            
-            <!-- Error Alert -->
-            {% if error %}
-            <div class="alert">
-                <i class="bi bi-exclamation-triangle-fill"></i>
-                <span>{{ error }}</span>
-            </div>
-            {% endif %}
-            
-            <!-- Login Form -->
-            <form method="POST" action="/admin/login">
-                <div class="form-group">
-                    <label for="username">
-                        <i class="bi bi-person-fill"></i>
-                        Username
-                    </label>
-                    <input type="text" id="username" name="username" placeholder="Masukkan username" required autocomplete="username">
-                </div>
-                
-                <div class="form-group">
-                    <label for="password">
-                        <i class="bi bi-lock-fill"></i>
-                        Password
-                    </label>
-                    <input type="password" id="password" name="password" placeholder="Masukkan password" required autocomplete="current-password">
-                </div>
-                
-                <button type="submit" class="btn-submit">
-                    <i class="bi bi-box-arrow-in-right"></i>
-                    Masuk ke Dashboard
-                </button>
-                
-                <a href="/" class="btn-back">
-                    <i class="bi bi-arrow-left"></i>
-                    Kembali ke Beranda
-                </a>
-            </form>
-            
-            <!-- Footer -->
-            <div class="footer-text">
-                <i class="bi bi-shield-check"></i> Secure Admin Access
-            </div>
+<div class="bg-gradient"></div>
+<div class="login-wrap">
+    <div class="login-card">
+        <div class="logo-sec">
+            <img src="/static/logo.jpg" alt="Logo" class="login-logo" onerror="this.style.display='none'">
+            <h1 class="login-title"><i class="bi bi-shield-lock-fill"></i> Admin Login</h1>
+            <p class="login-sub">Marching Band Simphony</p>
         </div>
+        {% if error %}
+        <div class="alert"><i class="bi bi-exclamation-triangle-fill"></i><span>{{ error }}</span></div>
+        {% endif %}
+        <form method="POST" action="/admin/login">
+            <div class="field">
+                <label><i class="bi bi-person"></i> Username</label>
+                <input type="text" id="username" name="username" placeholder="Masukkan username" required autocomplete="username">
+            </div>
+            <div class="field">
+                <label><i class="bi bi-lock"></i> Password</label>
+                <input type="password" id="password" name="password" placeholder="Masukkan password" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn-submit"><i class="bi bi-box-arrow-in-right"></i> Masuk ke Dashboard</button>
+            <a href="/" class="btn-back"><i class="bi bi-arrow-left"></i> Kembali ke Beranda</a>
+        </form>
+        <div class="footer-txt"><i class="bi bi-shield-check"></i> Secure Admin Access</div>
     </div>
+</div>
 </body>
 </html>

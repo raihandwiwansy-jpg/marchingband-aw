@@ -4,1028 +4,259 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin - Symphony</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
+        :root {
+            --gold:#FDB931; --gold-dark:#E8B923; --bg:#0a0a0f;
+            --glass:rgba(255,255,255,0.05); --glass-border:rgba(253,185,49,0.12);
+            --text:#e8e8ec; --text-dim:#8a8a9a; --radius:16px; --radius-sm:10px;
+        }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:40px}
+        .bg-gradient{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 600px 400px at 20% 20%,rgba(253,185,49,0.07) 0%,transparent 70%),radial-gradient(ellipse 500px 500px at 80% 80%,rgba(232,185,35,0.05) 0%,transparent 70%)}
+        .container{max-width:1200px;margin:0 auto;padding:0 16px;position:relative;z-index:1}
+        /* Navbar */
+        .nav{background:rgba(10,10,15,0.8);backdrop-filter:blur(20px);border-bottom:1px solid var(--glass-border);padding:16px 0;position:sticky;top:0;z-index:100}
+        .nav-inner{display:flex;align-items:center;justify-content:space-between}
+        .nav-brand{display:flex;align-items:center;gap:12px;color:var(--gold);text-decoration:none;font-weight:700;font-size:17px;font-family:'Space Grotesk',sans-serif}
+        .nav-logo{width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);box-shadow:0 0 15px rgba(253,185,49,0.3);background:#000}
+        .nav-brand i{font-size:20px}
+        .nav-logout{padding:8px 16px;border-radius:var(--radius-sm);border:1px solid var(--glass-border);background:rgba(255,255,255,0.04);color:var(--text-dim);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.3s;text-decoration:none;display:flex;align-items:center;gap:6px;font-family:'Inter',sans-serif}
+        .nav-logout:hover{border-color:var(--gold);color:var(--gold);background:rgba(253,185,49,0.08)}
+        /* Stats */
+        .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:24px 0}
+        .stat{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);padding:20px;display:flex;align-items:center;gap:14px;backdrop-filter:blur(12px);transition:all 0.3s}
+        .stat:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.2);border-color:rgba(253,185,49,0.25)}
+        .stat-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+        .stat-icon.gold{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:#000}
+        .stat-icon.dark{background:rgba(255,255,255,0.06);border:1px solid var(--glass-border);color:var(--gold)}
+        .stat h3{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--text);line-height:1}
+        .stat p{font-size:12px;color:var(--text-dim);margin-top:4px}
+        /* Action bar */
+        .actions{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);padding:18px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;backdrop-filter:blur(12px)}
+        .actions h5{font-weight:700;font-size:16px;display:flex;align-items:center;gap:8px;color:var(--text)}
+        .actions h5 i{color:var(--gold)}
+        .action-btns{display:flex;gap:8px;flex-wrap:wrap}
+        .abtn{padding:9px 18px;border-radius:var(--radius-sm);font-weight:600;font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer;transition:all 0.3s;border:none;font-family:'Inter',sans-serif}
+        .abtn-print{background:rgba(253,185,49,0.1);color:var(--gold);border:1px solid rgba(253,185,49,0.25)}
+        .abtn-print:hover{background:var(--gold);color:#000;transform:translateY(-1px)}
+        .abtn-refresh{background:rgba(255,255,255,0.04);color:var(--text-dim);border:1px solid rgba(255,255,255,0.08)}
+        .abtn-refresh:hover{background:rgba(255,255,255,0.08);color:var(--text)}
+        /* Table */
+        .table-wrap{background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius);overflow:hidden;backdrop-filter:blur(12px)}
+        .table-top{background:rgba(253,185,49,0.06);border-bottom:1px solid var(--glass-border);padding:16px 20px;display:flex;align-items:center;gap:8px}
+        .table-top h5{font-weight:700;color:var(--gold);display:flex;align-items:center;gap:8px}
+        .dt{width:100%;border-collapse:collapse}
+        .dt thead{background:rgba(255,255,255,0.03)}
+        .dt thead th{padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--glass-border)}
+        .dt tbody tr{transition:background 0.2s}
+        .dt tbody tr:hover{background:rgba(253,185,49,0.04)}
+        .dt tbody td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:14px;color:var(--text)}
+        .dt .nm{font-weight:700;color:var(--text)}
+        .dt .ts{font-size:12px;color:var(--text-dim)}
+        /* Badges */
+        .badge{padding:5px 10px;border-radius:16px;font-size:11px;font-weight:600;display:inline-block}
+        .b-dl{background:rgba(253,185,49,0.12);color:var(--gold);border:1px solid rgba(253,185,49,0.25)}
+        .b-br{background:rgba(255,255,255,0.06);color:var(--gold);border:1px solid var(--glass-border)}
+        .b-cg{background:rgba(232,185,35,0.1);color:var(--gold-dark);border:1px solid rgba(232,185,35,0.25)}
+        .b-pp{background:rgba(253,185,49,0.08);color:var(--gold);border:1px solid rgba(253,185,49,0.2)}
+        .b-xx{background:rgba(255,255,255,0.04);color:var(--text-dim);border:1px solid rgba(255,255,255,0.08)}
+        .btn-del{padding:7px 10px;border-radius:8px;background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.2);cursor:pointer;transition:all 0.3s;font-size:14px}
+        .btn-del:hover{background:#ef4444;color:#fff;transform:scale(1.05)}
+        /* Mobile cards */
+        .mcards{display:none;padding:16px}
+        .rcard{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius);padding:16px;margin-bottom:12px;transition:all 0.3s}
+        .rcard:hover{border-color:rgba(253,185,49,0.25)}
+        .rcard-h{display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.06)}
+        .rcard-h h6{margin:0;font-weight:700;font-size:16px}
+        .rcard-h .ts{font-size:12px;color:var(--text-dim);margin-top:4px}
+        .rcard-f{display:flex;gap:8px;font-size:13px;margin-bottom:8px}
+        .rcard-f .lb{font-weight:600;color:var(--text-dim);min-width:90px;flex-shrink:0}
+        .rcard-f .lb i{color:var(--gold)}
+        .rcard-f .vl{color:var(--text);flex:1}
+        .rcard-a{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:flex-end}
+        /* Empty */
+        .empty{text-align:center;padding:60px 20px}
+        .empty i{font-size:56px;color:var(--gold);margin-bottom:16px;opacity:0.5}
+        .empty h4{color:var(--text-dim);font-weight:700;margin-bottom:8px}
+        .empty p{color:var(--text-dim);opacity:0.6;margin:0;font-size:14px}
+        /* Print */
+        .print-wrap{display:none}
+        @media print{
+            body{background:#fff!important;padding:0!important}
+            .bg-gradient,.nav,.stats,.actions,.table-wrap,.mcards,.btn-del{display:none!important}
+            .print-wrap{display:block!important;padding:20px}
+            .print-hdr{text-align:center;margin-bottom:30px;border-bottom:3px solid var(--gold);padding-bottom:20px;display:flex;flex-direction:column;align-items:center;gap:12px}
+            .print-logo{width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--gold)}
+            .print-hdr h1{color:#000;font-size:28px;font-weight:800;margin:0}
+            .print-hdr h2{color:#1f2937;font-size:20px;margin:0}
+            .print-hdr p{color:#6b7280;font-size:14px;margin:0}
+            .ptbl{width:100%;border-collapse:collapse;font-size:11px}
+            .ptbl thead{background:#000;color:var(--gold)}
+            .ptbl thead th{padding:10px 8px;text-align:left;font-weight:700;font-size:10px;text-transform:uppercase;border:1px solid var(--gold)}
+            .ptbl tbody td{padding:8px;border:1px solid #e5e7eb;color:#1f2937;vertical-align:top}
+            .ptbl tbody tr:nth-child(even){background:#fff9e6}
+            .print-ftr{margin-top:30px;padding-top:20px;border-top:2px solid var(--gold);display:flex;justify-content:space-between;font-size:12px;color:#6b7280}
+            @page{margin:1.5cm;size:A4 landscape}
         }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #2d2d2d 100%);
-            min-height: 100vh;
-            padding-bottom: 40px;
-            position: relative;
-        }
-        
-        /* Animated Gold Particles Background */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(253, 185, 49, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(232, 185, 35, 0.12) 0%, transparent 40%),
-                radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.05) 0%, transparent 60%);
-            pointer-events: none;
-            z-index: 0;
-            animation: bgShimmer 8s ease-in-out infinite;
-        }
-        
-        @keyframes bgShimmer {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 1; }
-        }
-        
-        /* Navbar - Gold & Black Premium */
-        .navbar {
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%) !important;
-            box-shadow: 0 4px 20px rgba(253, 185, 49, 0.3);
-            padding: 16px 20px;
-            border-bottom: 3px solid;
-            border-image: linear-gradient(90deg, transparent, #FDB931, #E8B923, #FDB931, transparent) 1;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: #FDB931 !important;
-        }
-        
-        .navbar-logo {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #FDB931;
-            box-shadow: 0 0 15px rgba(253, 185, 49, 0.5);
-            animation: logoGlow 3s ease-in-out infinite;
-            background: #000;
-        }
-        
-        @keyframes logoGlow {
-            0%, 100% { 
-                box-shadow: 0 0 15px rgba(253, 185, 49, 0.5);
-            }
-            50% { 
-                box-shadow: 0 0 25px rgba(253, 185, 49, 0.8);
-            }
-        }
-        
-        .navbar-brand i {
-            font-size: 24px;
-            color: #FDB931;
-        }
-        
-        .btn-outline-light {
-            border-width: 2px;
-            border-color: #FDB931;
-            color: #FDB931;
-            font-weight: 600;
-            padding: 8px 16px;
-            transition: all 0.3s;
-        }
-        
-        .btn-outline-light:hover {
-            background: #FDB931;
-            color: #000;
-            transform: translateY(-2px);
-            box-shadow: 0 0 20px rgba(253, 185, 49, 0.6);
-        }
-        
-        /* Container */
-        .container {
-            max-width: 1200px;
-            padding: 0 16px;
-            position: relative;
-            z-index: 1;
-        }
-        
-        /* Stats Cards - Gold Theme */
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-        
-        .stat-card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.3), 0 0 20px rgba(253, 185, 49, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            transition: transform 0.3s;
-            border: 1px solid rgba(253, 185, 49, 0.2);
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 30px rgba(253, 185, 49, 0.2);
-        }
-        
-        .stat-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            color: white;
-        }
-        
-        .stat-icon.total {
-            background: linear-gradient(135deg, #FDB931 0%, #E8B923 100%);
-            color: #000;
-        }
-        
-        .stat-icon.drumline {
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
-            border: 2px solid #FDB931;
-            color: #FDB931;
-        }
-        
-        .stat-icon.brass {
-            background: linear-gradient(135deg, #FDB931 0%, #E8B923 100%);
-            color: #000;
-        }
-        
-        .stat-icon.guard {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border: 2px solid #E8B923;
-            color: #E8B923;
-        }
-        
-        .stat-info h3 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 800;
-            color: #1f2937;
-        }
-        
-        .stat-info p {
-            margin: 0;
-            font-size: 13px;
-            color: #6b7280;
-            font-weight: 500;
-        }
-        
-        /* Action Bar */
-        .action-bar {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            align-items: center;
-            justify-content: space-between;
-            border: 1px solid rgba(253, 185, 49, 0.2);
-        }
-        
-        .action-bar h5 {
-            margin: 0;
-            font-weight: 700;
-            color: #1f2937;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .action-bar h5 i {
-            color: #E8B923;
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .btn-action {
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .btn-print {
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
-            color: #FDB931;
-            border: 2px solid #FDB931;
-            box-shadow: 0 4px 12px rgba(253, 185, 49, 0.3);
-        }
-        
-        .btn-print:hover {
-            background: linear-gradient(135deg, #FDB931 0%, #E8B923 100%);
-            color: #000;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(253, 185, 49, 0.5);
-        }
-        
-        .btn-refresh {
-            background: #f3f4f6;
-            color: #374151;
-        }
-        
-        .btn-refresh:hover {
-            background: #e5e7eb;
-            transform: translateY(-2px);
-        }
-        
-        /* Table Container */
-        .table-container {
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-            border: 1px solid rgba(253, 185, 49, 0.2);
-        }
-        
-        .table-header {
-            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
-            color: #FDB931;
-            padding: 20px;
-            border-bottom: 3px solid #FDB931;
-        }
-        
-        .table-header h5 {
-            margin: 0;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .table-header h5 i {
-            color: #FDB931;
-        }
-        
-        /* Desktop Table */
-        .table-responsive {
-            overflow-x: auto;
-        }
-        
-        .data-table {
-            width: 100%;
-            margin: 0;
-            border-collapse: collapse;
-        }
-        
-        .data-table thead {
-            background: #f9fafb;
-        }
-        
-        .data-table thead th {
-            padding: 14px 16px;
-            text-align: left;
-            font-weight: 700;
-            font-size: 13px;
-            color: #374151;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 2px solid #FDB931;
-        }
-        
-        .data-table tbody tr {
-            transition: background 0.2s;
-        }
-        
-        .data-table tbody tr:hover {
-            background: #fff9e6;
-        }
-        
-        .data-table tbody td {
-            padding: 14px 16px;
-            border-bottom: 1px solid #f3f4f6;
-            font-size: 14px;
-            color: #4b5563;
-        }
-        
-        .data-table .nama-cell {
-            font-weight: 700;
-            color: #1f2937;
-        }
-        
-        .data-table .timestamp-cell {
-            font-size: 12px;
-            color: #9ca3af;
-        }
-        
-        .badge-minat {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            display: inline-block;
-        }
-        
-        .badge-drumline {
-            background: #fff3cc;
-            color: #92400e;
-            border: 1px solid #FDB931;
-        }
-        
-        .badge-brass {
-            background: #000;
-            color: #FDB931;
-            border: 1px solid #FDB931;
-        }
-        
-        .badge-guard {
-            background: #fff9e6;
-            color: #E8B923;
-            border: 1px solid #E8B923;
-        }
-        
-        .badge-pit {
-            background: #fef3c7;
-            color: #92400e;
-            border: 1px solid #FDB931;
-        }
-        
-        .badge-unsure {
-            background: #f3f4f6;
-            color: #4b5563;
-            border: 1px solid #d1d5db;
-        }
-        
-        .btn-delete {
-            padding: 8px 12px;
-            border-radius: 8px;
-            background: #fee2e2;
-            color: #dc2626;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-delete:hover {
-            background: #dc2626;
-            color: white;
-            transform: scale(1.05);
-        }
-        
-        /* Mobile Card View */
-        .mobile-cards {
-            display: none;
-            padding: 16px;
-        }
-        
-        .reg-card {
-            background: white;
-            border: 2px solid #f3f4f6;
-            border-radius: 14px;
-            padding: 18px;
-            margin-bottom: 14px;
-            transition: all 0.3s;
-        }
-        
-        .reg-card:hover {
-            border-color: #FDB931;
-            box-shadow: 0 4px 16px rgba(253, 185, 49, 0.2);
-        }
-        
-        .reg-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 14px;
-            padding-bottom: 14px;
-            border-bottom: 2px solid #f3f4f6;
-        }
-        
-        .reg-card-header h6 {
-            margin: 0;
-            font-weight: 700;
-            font-size: 17px;
-            color: #1f2937;
-        }
-        
-        .reg-card-header .timestamp {
-            font-size: 12px;
-            color: #9ca3af;
-            margin-top: 4px;
-        }
-        
-        .reg-card-body {
-            display: grid;
-            gap: 10px;
-        }
-        
-        .reg-card-field {
-            display: flex;
-            gap: 10px;
-            font-size: 14px;
-        }
-        
-        .reg-card-field .label {
-            font-weight: 600;
-            color: #6b7280;
-            min-width: 100px;
-        }
-        
-        .reg-card-field .label i {
-            color: #E8B923;
-        }
-        
-        .reg-card-field .value {
-            color: #1f2937;
-            flex: 1;
-        }
-        
-        .reg-card-actions {
-            margin-top: 14px;
-            padding-top: 14px;
-            border-top: 2px solid #f3f4f6;
-            display: flex;
-            justify-content: flex-end;
-        }
-        
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-        }
-        
-        .empty-state i {
-            font-size: 64px;
-            color: #FDB931;
-            margin-bottom: 16px;
-        }
-        
-        .empty-state h4 {
-            color: #6b7280;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        
-        .empty-state p {
-            color: #9ca3af;
-            margin: 0;
-        }
-        
-        /* Print Styles */
-        .print-table-container {
-            display: none;
-        }
-        
-        @media print {
-            body {
-                background: white !important;
-                padding: 0 !important;
-            }
-            
-            body::before {
-                display: none !important;
-            }
-            
-            .navbar,
-            .stats-row,
-            .action-bar,
-            .table-container,
-            .mobile-cards,
-            .btn-delete {
-                display: none !important;
-            }
-            
-            .print-table-container {
-                display: block !important;
-                padding: 20px;
-            }
-            
-            .print-header {
-                text-align: center;
-                margin-bottom: 30px;
-                border-bottom: 3px solid #FDB931;
-                padding-bottom: 20px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 12px;
-            }
-            
-            .print-logo {
-                width: 80px;
-                height: 80px;
-                border-radius: 50%;
-                object-fit: cover;
-                border: 3px solid #FDB931;
-                box-shadow: 0 0 20px rgba(253, 185, 49, 0.5);
-            }
-            
-            .print-header-text h1 {
-                color: #000;
-                font-size: 28px;
-                font-weight: 800;
-                margin: 0 0 8px 0;
-                background: linear-gradient(135deg, #FDB931 0%, #E8B923 100%);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
-            }
-            
-            .print-header-text h2 {
-                color: #1f2937;
-                font-size: 20px;
-                font-weight: 600;
-                margin: 0 0 12px 0;
-            }
-            
-            .print-header-text p {
-                color: #6b7280;
-                font-size: 14px;
-                margin: 0;
-            }
-            
-            .print-table {
-                width: 100%;
-                border-collapse: collapse;
-                font-size: 11px;
-            }
-            
-            .print-table thead {
-                background: #000;
-                color: #FDB931;
-            }
-            
-            .print-table thead th {
-                padding: 10px 8px;
-                text-align: left;
-                font-weight: 700;
-                font-size: 10px;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                border: 1px solid #FDB931;
-            }
-            
-            .print-table tbody td {
-                padding: 8px;
-                border: 1px solid #e5e7eb;
-                color: #1f2937;
-                vertical-align: top;
-            }
-            
-            .print-table tbody tr:nth-child(even) {
-                background: #fff9e6;
-            }
-            
-            .print-footer {
-                margin-top: 30px;
-                padding-top: 20px;
-                border-top: 2px solid #FDB931;
-                display: flex;
-                justify-content: space-between;
-                font-size: 12px;
-                color: #6b7280;
-            }
-            
-            @page {
-                margin: 1.5cm;
-                size: A4 landscape;
-            }
-        }
-        
         /* Responsive */
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 14px 16px;
-            }
-            
-            .navbar-brand {
-                font-size: 17px;
-            }
-            
-            .navbar-logo {
-                width: 38px;
-                height: 38px;
-            }
-            
-            .navbar-brand i {
-                font-size: 20px;
-            }
-            
-            .btn-outline-light {
-                padding: 6px 12px;
-                font-size: 13px;
-            }
-            
-            .stats-row {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-            
-            .stat-card {
-                padding: 16px;
-            }
-            
-            .stat-icon {
-                width: 48px;
-                height: 48px;
-                font-size: 24px;
-            }
-            
-            .stat-info h3 {
-                font-size: 24px;
-            }
-            
-            .action-bar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .action-bar h5 {
-                font-size: 16px;
-            }
-            
-            .action-buttons {
-                width: 100%;
-            }
-            
-            .btn-action {
-                flex: 1;
-                justify-content: center;
-                font-size: 13px;
-                padding: 10px 16px;
-            }
-            
-            /* Hide desktop table, show mobile cards */
-            .table-responsive {
-                display: none;
-            }
-            
-            .mobile-cards {
-                display: block;
-            }
-            
-            .table-header {
-                padding: 16px;
-            }
-            
-            .table-header h5 {
-                font-size: 16px;
-            }
+        @media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}}
+        @media(max-width:768px){
+            .stats{grid-template-columns:1fr 1fr;gap:12px}
+            .stat{padding:16px}
+            .stat h3{font-size:24px}
+            .actions{flex-direction:column;align-items:stretch}
+            .action-btns{width:100%}
+            .abtn{flex:1;justify-content:center}
+            .table-wrap .table-body .dt{display:none}
+            .mcards{display:block}
         }
-        
-        @media (max-width: 480px) {
-            .container {
-                padding: 0 12px;
-            }
-            
-            .stat-card {
-                padding: 14px;
-            }
-            
-            .stat-icon {
-                width: 44px;
-                height: 44px;
-                font-size: 22px;
-            }
-            
-            .stat-info h3 {
-                font-size: 22px;
-            }
-            
-            .stat-info p {
-                font-size: 12px;
-            }
-            
-            .reg-card {
-                padding: 14px;
-            }
-            
-            .reg-card-header h6 {
-                font-size: 16px;
-            }
-            
-            .reg-card-field {
-                font-size: 13px;
-            }
-            
-            .reg-card-field .label {
-                min-width: 90px;
-            }
+        @media(max-width:480px){
+            .stats{grid-template-columns:1fr}
+            .stat{padding:14px}
+            .stat-icon{width:42px;height:42px;font-size:20px}
+            .stat h3{font-size:22px}
         }
     </style>
 </head>
 <body>
-    <!-- Navbar with Logo -->
-    <nav class="navbar navbar-dark">
-        <div class="container d-flex justify-content-between align-items-center">
-            <span class="navbar-brand">
-                <img src="/static/logo.jpg" alt="Symphony Logo" class="navbar-logo" onerror="this.style.display='none'">
-                <i class="bi bi-music-note-beamed"></i>
-                Dashboard Simphony
-            </span>
-            <a href="/admin/logout" class="btn btn-outline-light btn-sm">
-                <i class="bi bi-box-arrow-right"></i> Logout
-            </a>
+<div class="bg-gradient"></div>
+
+<nav class="nav">
+    <div class="container nav-inner">
+        <a href="/admin/dashboard" class="nav-brand">
+            <img src="/static/logo.jpg" alt="Logo" class="nav-logo" onerror="this.style.display='none'">
+            <i class="bi bi-music-note-beamed"></i> Dashboard Simphony
+        </a>
+        <a href="/admin/logout" class="nav-logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+    </div>
+</nav>
+
+<div class="container mt-4" style="margin-top:24px">
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-icon gold"><i class="bi bi-people-fill"></i></div>
+            <div><h3>{{ registrations|length }}</h3><p>Total Pendaftar</p></div>
         </div>
-    </nav>
-
-    <div class="container mt-4">
-        <!-- Stats Cards -->
-        <div class="stats-row">
-            <div class="stat-card">
-                <div class="stat-icon total">
-                    <i class="bi bi-people-fill"></i>
-                </div>
-                <div class="stat-info">
-                    <h3>{{ registrations|length }}</h3>
-                    <p>Total Pendaftar</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon drumline">
-                    <i class="bi bi-drum"></i>
-                </div>
-                <div class="stat-info">
-                    <h3 id="drumlineCount">0</h3>
-                    <p>Drumline</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon brass">
-                    <i class="bi bi-music-note"></i>
-                </div>
-                <div class="stat-info">
-                    <h3 id="brassCount">0</h3>
-                    <p>Brass</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon guard">
-                    <i class="bi bi-flag"></i>
-                </div>
-                <div class="stat-info">
-                    <h3 id="guardCount">0</h3>
-                    <p>Color Guard</p>
-                </div>
-            </div>
+        <div class="stat">
+            <div class="stat-icon dark"><i class="bi bi-drum"></i></div>
+            <div><h3 id="drumlineCount">0</h3><p>Drumline</p></div>
         </div>
-
-        <!-- Action Bar -->
-        <div class="action-bar">
-            <h5><i class="bi bi-table"></i> Data Pendaftar</h5>
-            <div class="action-buttons">
-                <button class="btn-action btn-print" onclick="printData()">
-                    <i class="bi bi-printer"></i> Cetak Data
-                </button>
-                <button class="btn-action btn-refresh" onclick="location.reload()">
-                    <i class="bi bi-arrow-clockwise"></i> Refresh
-                </button>
-            </div>
+        <div class="stat">
+            <div class="stat-icon gold"><i class="bi bi-music-note"></i></div>
+            <div><h3 id="brassCount">0</h3><p>Brass</p></div>
         </div>
-
-        <!-- Table Container -->
-        <div class="table-container">
-            <div class="table-header">
-                <h5><i class="bi bi-list-ul"></i> Daftar Pendaftar Terbaru</h5>
-            </div>
-            
-            {% if registrations %}
-            <!-- Desktop Table View -->
-            <div class="table-responsive">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Waktu Daftar</th>
-                            <th>Nama Lengkap</th>
-                            <th>Asal SMP</th>
-                            <th>WhatsApp</th>
-                            <th>Minat</th>
-                            <th>Alasan</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for reg in registrations %}
-                        <tr>
-                            <td>{{ loop.index }}</td>
-                            <td class="timestamp-cell">{{ reg.timestamp }}</td>
-                            <td class="nama-cell">{{ reg.nama }}</td>
-                            <td>{{ reg.asal_smp }}</td>
-                            <td>{{ reg.whatsapp }}</td>
-                            <td>
-                                {% if reg.minat == 'Drumline' %}
-                                    <span class="badge-minat badge-drumline">{{ reg.minat }}</span>
-                                {% elif reg.minat == 'Brass' %}
-                                    <span class="badge-minat badge-brass">{{ reg.minat }}</span>
-                                {% elif reg.minat == 'Color Guard' %}
-                                    <span class="badge-minat badge-guard">{{ reg.minat }}</span>
-                                {% elif 'Pit' in reg.minat %}
-                                    <span class="badge-minat badge-pit">{{ reg.minat }}</span>
-                                {% else %}
-                                    <span class="badge-minat badge-unsure">{{ reg.minat }}</span>
-                                {% endif %}
-                            </td>
-                            <td><small>{{ reg.alasan }}</small></td>
-                            <td>
-                                <form action="/admin/delete/{{ reg.id }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data {{ reg.nama }}?');" style="display:inline;">
-                                    <button type="submit" class="btn-delete" title="Hapus">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Mobile Card View -->
-            <div class="mobile-cards">
-                {% for reg in registrations %}
-                <div class="reg-card">
-                    <div class="reg-card-header">
-                        <div>
-                            <h6>{{ reg.nama }}</h6>
-                            <div class="timestamp">{{ reg.timestamp }}</div>
-                        </div>
-                        <form action="/admin/delete/{{ reg.id }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data {{ reg.nama }}?');" style="display:inline;">
-                            <button type="submit" class="btn-delete" title="Hapus">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </form>
-                    </div>
-                    <div class="reg-card-body">
-                        <div class="reg-card-field">
-                            <span class="label"><i class="bi bi-building"></i> Asal SMP:</span>
-                            <span class="value">{{ reg.asal_smp }}</span>
-                        </div>
-                        <div class="reg-card-field">
-                            <span class="label"><i class="bi bi-whatsapp"></i> WhatsApp:</span>
-                            <span class="value">{{ reg.whatsapp }}</span>
-                        </div>
-                        <div class="reg-card-field">
-                            <span class="label"><i class="bi bi-music-note"></i> Minat:</span>
-                            <span class="value">
-                                {% if reg.minat == 'Drumline' %}
-                                    <span class="badge-minat badge-drumline">{{ reg.minat }}</span>
-                                {% elif reg.minat == 'Brass' %}
-                                    <span class="badge-minat badge-brass">{{ reg.minat }}</span>
-                                {% elif reg.minat == 'Color Guard' %}
-                                    <span class="badge-minat badge-guard">{{ reg.minat }}</span>
-                                {% elif 'Pit' in reg.minat %}
-                                    <span class="badge-minat badge-pit">{{ reg.minat }}</span>
-                                {% else %}
-                                    <span class="badge-minat badge-unsure">{{ reg.minat }}</span>
-                                {% endif %}
-                            </span>
-                        </div>
-                        <div class="reg-card-field">
-                            <span class="label"><i class="bi bi-chat-heart"></i> Alasan:</span>
-                            <span class="value">{{ reg.alasan }}</span>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="empty-state">
-                <i class="bi bi-inbox"></i>
-                <h4>Belum Ada Pendaftar</h4>
-                <p>Data pendaftar akan muncul di sini setelah ada yang mendaftar.</p>
-            </div>
-            {% endif %}
+        <div class="stat">
+            <div class="stat-icon dark"><i class="bi bi-flag"></i></div>
+            <div><h3 id="guardCount">0</h3><p>Color Guard</p></div>
         </div>
     </div>
 
-    <!-- Print Table Container (Hidden on screen, shown on print) -->
-    <div class="print-table-container">
-        <div class="print-header">
-            <img src="/static/logo.jpg" alt="Symphony Logo" class="print-logo" onerror="this.style.display='none'">
-            <div class="print-header-text">
-                <h1>🎺 MARCHING BAND SYMPHONY</h1>
-                <h2>Daftar Pendaftar Anggota Baru</h2>
-                <p>Dicetak pada: <span id="printDate"></span></p>
-            </div>
-        </div>
-        <table class="print-table" id="printTable">
-            <thead>
-                <tr>
-                    <th style="width: 40px;">No</th>
-                    <th style="width: 180px;">Nama Lengkap</th>
-                    <th style="width: 180px;">Asal SMP</th>
-                    <th style="width: 120px;">WhatsApp</th>
-                    <th style="width: 130px;">Minat Bagian</th>
-                    <th>Alasan Bergabung</th>
-                    <th style="width: 130px;">Waktu Daftar</th>
-                </tr>
-            </thead>
-            <tbody id="printTableBody">
-                <!-- Data akan diisi oleh JavaScript -->
-            </tbody>
-        </table>
-        <div class="print-footer">
-            <div>
-                <strong>Total Pendaftar:</strong> <span id="printTotal"></span> orang
-            </div>
-            <div>
-                <strong>Admin Symphony</strong>
-            </div>
+    <div class="actions">
+        <h5><i class="bi bi-table"></i> Data Pendaftar</h5>
+        <div class="action-btns">
+            <button class="abtn abtn-print" onclick="printData()"><i class="bi bi-printer"></i> Cetak Data</button>
+            <button class="abtn abtn-refresh" onclick="location.reload()"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
         </div>
     </div>
 
-    <script>
-        // Data dari server (Jinja2)
-        const registrationsData = [
+    <div class="table-wrap">
+        <div class="table-top"><h5><i class="bi bi-list-ul"></i> Daftar Pendaftar Terbaru</h5></div>
+        {% if registrations %}
+        <div class="table-body">
+            <table class="dt">
+                <thead><tr><th>No</th><th>Waktu</th><th>Nama</th><th>Asal SMP</th><th>WhatsApp</th><th>Minat</th><th>Alasan</th><th>Aksi</th></tr></thead>
+                <tbody>
+                    {% for reg in registrations %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td class="ts">{{ reg.timestamp }}</td>
+                        <td class="nm">{{ reg.nama }}</td>
+                        <td>{{ reg.asal_smp }}</td>
+                        <td>{{ reg.whatsapp }}</td>
+                        <td>
+                            {% if reg.minat == 'Drumline' %}<span class="badge b-dl">{{ reg.minat }}</span>
+                            {% elif reg.minat == 'Brass' %}<span class="badge b-br">{{ reg.minat }}</span>
+                            {% elif reg.minat == 'Color Guard' %}<span class="badge b-cg">{{ reg.minat }}</span>
+                            {% elif 'Pit' in reg.minat %}<span class="badge b-pp">{{ reg.minat }}</span>
+                            {% else %}<span class="badge b-xx">{{ reg.minat }}</span>{% endif %}
+                        </td>
+                        <td style="font-size:13px;color:var(--text-dim)">{{ reg.alasan }}</td>
+                        <td>
+                            <form action="/admin/delete/{{ reg.id }}" method="POST" onsubmit="return confirm('Yakin hapus data {{ reg.nama }}?');" style="display:inline">
+                                <button type="submit" class="btn-del" title="Hapus"><i class="bi bi-trash3"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="mcards">
             {% for reg in registrations %}
-            {
-                id: {{ reg.id }},
-                nama: "{{ reg.nama | e }}",
-                asal_smp: "{{ reg.asal_smp | e }}",
-                whatsapp: "{{ reg.whatsapp | e }}",
-                minat: "{{ reg.minat | e }}",
-                alasan: "{{ reg.alasan | e }}",
-                timestamp: "{{ reg.timestamp }}"
-            }{% if not loop.last %},{% endif %}
+            <div class="rcard">
+                <div class="rcard-h">
+                    <div><h6>{{ reg.nama }}</h6><div class="ts">{{ reg.timestamp }}</div></div>
+                    <form action="/admin/delete/{{ reg.id }}" method="POST" onsubmit="return confirm('Yakin hapus data {{ reg.nama }}?');" style="display:inline">
+                        <button type="submit" class="btn-del" title="Hapus"><i class="bi bi-trash3"></i></button>
+                    </form>
+                </div>
+                <div class="rcard-f"><span class="lb"><i class="bi bi-building"></i> SMP:</span><span class="vl">{{ reg.asal_smp }}</span></div>
+                <div class="rcard-f"><span class="lb"><i class="bi bi-whatsapp"></i> WA:</span><span class="vl">{{ reg.whatsapp }}</span></div>
+                <div class="rcard-f"><span class="lb"><i class="bi bi-music-note"></i> Minat:</span><span class="vl">
+                    {% if reg.minat == 'Drumline' %}<span class="badge b-dl">{{ reg.minat }}</span>
+                    {% elif reg.minat == 'Brass' %}<span class="badge b-br">{{ reg.minat }}</span>
+                    {% elif reg.minat == 'Color Guard' %}<span class="badge b-cg">{{ reg.minat }}</span>
+                    {% elif 'Pit' in reg.minat %}<span class="badge b-pp">{{ reg.minat }}</span>
+                    {% else %}<span class="badge b-xx">{{ reg.minat }}</span>{% endif %}
+                </span></div>
+                <div class="rcard-f"><span class="lb"><i class="bi bi-chat-heart"></i> Alasan:</span><span class="vl">{{ reg.alasan }}</span></div>
+            </div>
             {% endfor %}
-        ];
+        </div>
+        {% else %}
+        <div class="empty"><i class="bi bi-inbox"></i><h4>Belum Ada Pendaftar</h4><p>Data akan muncul setelah ada yang mendaftar.</p></div>
+        {% endif %}
+    </div>
+</div>
 
-        // Calculate stats
-        function updateStats() {
-            const drumline = registrationsData.filter(r => r.minat === 'Drumline').length;
-            const brass = registrationsData.filter(r => r.minat === 'Brass').length;
-            const guard = registrationsData.filter(r => r.minat === 'Color Guard').length;
-            
-            document.getElementById('drumlineCount').textContent = drumline;
-            document.getElementById('brassCount').textContent = brass;
-            document.getElementById('guardCount').textContent = guard;
-        }
+<!-- Print -->
+<div class="print-wrap">
+    <div class="print-hdr">
+        <img src="/static/logo.jpg" alt="Logo" class="print-logo" onerror="this.style.display='none'">
+        <h1>🎺 MARCHING BAND SYMPHONY</h1>
+        <h2>Daftar Pendaftar Anggota Baru</h2>
+        <p>Dicetak pada: <span id="printDate"></span></p>
+    </div>
+    <table class="ptbl" id="printTable">
+        <thead><tr><th style="width:40px">No</th><th>Nama</th><th>Asal SMP</th><th>WhatsApp</th><th>Minat</th><th>Alasan</th><th style="width:130px">Waktu</th></tr></thead>
+        <tbody id="printTableBody"></tbody>
+    </table>
+    <div class="print-ftr"><div><strong>Total:</strong> <span id="printTotal"></span> orang</div><div><strong>Admin Symphony</strong></div></div>
+</div>
 
-        // Print function with A-Z sorting
-        function printData() {
-            if (registrationsData.length === 0) {
-                alert('Belum ada data pendaftar untuk dicetak.');
-                return;
-            }
+<script>
+const registrationsData=[{% for reg in registrations %}{id:{{ reg.id }},nama:"{{ reg.nama | e }}",asal_smp:"{{ reg.asal_smp | e }}",whatsapp:"{{ reg.whatsapp | e }}",minat:"{{ reg.minat | e }}",alasan:"{{ reg.alasan | e }}",timestamp:"{{ reg.timestamp }}"}{% if not loop.last %},{% endif %}{% endfor %}];
 
-            // Sort data A-Z by nama
-            const sortedData = [...registrationsData].sort((a, b) => {
-                return a.nama.localeCompare(b.nama, 'id', { sensitivity: 'base' });
-            });
+function updateStats(){
+    document.getElementById('drumlineCount').textContent=registrationsData.filter(r=>r.minat==='Drumline').length;
+    document.getElementById('brassCount').textContent=registrationsData.filter(r=>r.minat==='Brass').length;
+    document.getElementById('guardCount').textContent=registrationsData.filter(r=>r.minat==='Color Guard').length;
+}
 
-            // Set print date
-            const now = new Date();
-            const options = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            };
-            document.getElementById('printDate').textContent = now.toLocaleDateString('id-ID', options);
+function printData(){
+    if(!registrationsData.length){alert('Belum ada data.');return}
+    const sorted=[...registrationsData].sort((a,b)=>a.nama.localeCompare(b.nama,'id',{sensitivity:'base'}));
+    document.getElementById('printDate').textContent=new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    const tb=document.getElementById('printTableBody');tb.innerHTML='';
+    sorted.forEach((r,i)=>{const tr=document.createElement('tr');tr.innerHTML=`<td style="text-align:center">${i+1}</td><td><strong>${r.nama}</strong></td><td>${r.asal_smp}</td><td>${r.whatsapp}</td><td>${r.minat}</td><td>${r.alasan}</td><td style="font-size:10px">${r.timestamp}</td>`;tb.appendChild(tr)});
+    document.getElementById('printTotal').textContent=sorted.length;
+    window.print();
+}
 
-            // Populate print table
-            const tbody = document.getElementById('printTableBody');
-            tbody.innerHTML = '';
-
-            sortedData.forEach((reg, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td style="text-align: center;">${index + 1}</td>
-                    <td><strong>${reg.nama}</strong></td>
-                    <td>${reg.asal_smp}</td>
-                    <td>${reg.whatsapp}</td>
-                    <td>${reg.minat}</td>
-                    <td>${reg.alasan}</td>
-                    <td style="font-size: 10px;">${reg.timestamp}</td>
-                `;
-                tbody.appendChild(row);
-            });
-
-            // Set total
-            document.getElementById('printTotal').textContent = sortedData.length;
-
-            // Trigger print
-            window.print();
-        }
-
-        // Initialize
-        updateStats();
-    </script>
+updateStats();
+</script>
 </body>
 </html>
